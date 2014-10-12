@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+<title>SpaceX Launch Photos</title>
+<style>
+html,
+body,
+#photos {
+  height: 100%;
+  margin: 0;
+}
+#photos {
+  padding: 0;
+  white-space: nowrap;
+}
+#photos li {
+  display: inline-block;
+  height: 100%;
+  position: relative;
+}
+#photos span {
+  background: rgba(64, 64, 64, 0.7);
+  bottom: 0;
+  box-sizing: border-box;
+  color: white;
+  font-family: sans-serif;
+  height: 100px;
+  left: 0;
+  line-height: 2em;
+  padding: 5px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+  <ul id="photos"></ul>
+<script src="js/jquery-2.1.1.min.js"></script>
+<script>
+$(function(){
+  var rocketRatio = 200 / 1080,
+      photoDiv = $('#photos'),
+      height = photoDiv.height(),
+      rocketWidth = height * rocketRatio,
+
+      launches = [
+        {
+          img: 'img/2.jpg',
+          name: 'Flight 2',
+          payload: 'COTS 1',
+          date: '8 December 2010',
+          offsetX: 714,
+          offsetY: 307,
+          imgWidth: 1632,
+          imgHeight: 2448,
+          rocketWidth: 183,
+          rocketHeight: 1090
+        },
+        {
+          img: 'img/3.jpg',
+          name: 'Flight 3',
+          payload: 'COTS 2+',
+          date: '22 May 2012',
+          offsetX: 585,
+          offsetY: 124,
+          imgWidth: 1280,
+          imgHeight: 853,
+          rocketWidth: 89,
+          rocketHeight: 583
+        },
+        {
+          img: 'img/5.jpg',
+          name: 'Flight 5',
+          payload: 'CRS-2',
+          date: '1 March 2013',
+          offsetX: 805,
+          offsetY: 992,
+          imgWidth: 1920,
+          imgHeight: 2880,
+          rocketWidth: 148,
+          rocketHeight: 1165
+        },
+        {
+          img: 'img/6.jpg',
+          name: 'Flight 6',
+          payload: 'CASSIOPE',
+          date: '29 September 2013',
+          offsetX: 856,
+          offsetY: 117,
+          imgWidth: 2000,
+          imgHeight: 3000,
+          rocketWidth: 205,
+          rocketHeight: 1799
+        },
+        {
+          img: 'img/7.jpg',
+          name: 'Flight 7',
+          payload: 'SES-8',
+          date: '3 December 2013',
+          offsetX: 700,
+          offsetY: 628,
+          imgWidth: 3000,
+          imgHeight: 2000,
+          rocketWidth: 99,
+          rocketHeight: 907
+        },
+        {
+          img: 'img/8.jpg',
+          name: 'Flight 8',
+          payload: 'THAICOM 6',
+          date: '6 January 2014',
+          offsetX: 850,
+          offsetY: 570,
+          imgWidth: 2000,
+          imgHeight: 3000,
+          rocketWidth: 221,
+          rocketHeight: 2099
+        }
+      ],
+
+      i,
+      len = launches.length,
+      launch,
+      item,
+      scale;
+
+  for(i=0;i<len;i++){
+    launch = launches[i];
+    item = $('<li>').html('<span>'+launch.name+'<br>'+launch.payload+'<br>'+launch.date+'</span>');
+    scale = height / launch.rocketHeight;
+    item.css({
+      backgroundImage: 'url('+launch.img+')',
+      backgroundPosition: '' + (launch.imgWidth - launch.offsetX) * scale + 'px ' +
+        (launch.imgHeight - launch.offsetY) * scale + 'px',
+      backgroundSize: '' + (launch.imgWidth * scale) + 'px ' +
+        (launch.imgHeight * scale) + 'px',
+      width: '' + rocketWidth + 'px'
+    });
+    photoDiv.append(item);
+  }
+});
+</script>
+</body>
+</html>
