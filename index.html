@@ -3,35 +3,75 @@
 <head>
 <title>SpaceX Launch Photos</title>
 <style>
+@font-face {
+    font-family: "Neou Thin Web";
+    src: url('fonts/neou-thin-webfont.eot'); /* IE 9 */
+    src: url('fonts/neou-thin-webfont.eot?#iefix') format('embedded-opentype'), /* IE 6 - 8 */
+         url('fonts/neou-thin-webfont.svg#neouthin') format('svg'), /* Older versions of iOS */
+         url('fonts/neou-thin-webfont.woff') format('woff'), /* Modern browsers */
+         url('fonts/neou-thin-webfont.ttf') format('truetype'); /* Safari, Android, iOS */
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sans Light Web";
+    src: url('fonts/opensans-light-webfont.eot'); /* IE 9 */
+    src: url('fonts/opensans-light-webfont.eot?#iefix') format('embedded-opentype'), /* IE 6 - 8 */
+         url('fonts/opensans-light-webfont.woff') format('woff'), /* Modern browsers */
+         url('fonts/opensans-light-webfont.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('fonts/opensans-light-webfont.svg#proxima_novathin') format('svg'); /* Older versions of iOS */
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Open Sans Web";
+    src: url('fonts/opensans-regular-webfont.eot'); /* IE 9 */
+    src: url('fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'), /* IE 6 - 8 */
+         url('fonts/opensans-regular-webfont.svg#proxima_novathin') format('svg'), /* Older versions of iOS */
+         url('fonts/opensans-regular-webfont.woff') format('woff'), /* Modern browsers */
+         url('fonts/opensans-regular-webfont.ttf') format('truetype'); /* Safari, Android, iOS */
+    font-weight: normal;
+    font-style: normal;
+}
 html,
-body,
-#photos {
+body{
   height: 100%;
   margin: 0;
 }
 #photos {
+  height: 100%;
+  margin: 0;
   padding: 0;
   white-space: nowrap;
 }
 #photos li {
+  background-color: black;
+  background-repeat: no-repeat;
   display: inline-block;
   height: 100%;
   position: relative;
+  -webkit-transition: width 1s, background-position 1s, background-size 1s;
 }
-#photos span {
+.expand {
+}
+#photos p {
   background: rgba(64, 64, 64, 0.7);
   bottom: 0;
   box-sizing: border-box;
   color: white;
-  font-family: sans-serif;
-  height: 100px;
+  font-family: "Open Sans Light Web", "Open Sans Web", Helvetica, sans-serif;
+  font-size: 8pt;
   left: 0;
   line-height: 2em;
+  margin: 0;
   padding: 5px;
   position: absolute;
   right: 0;
   text-align: center;
   text-transform: uppercase;
+}
+.payload {
+  font-size: 1.4em;
 }
 </style>
 </head>
@@ -42,8 +82,9 @@ body,
 $(function(){
   var rocketRatio = 200 / 1080,
       photoDiv = $('#photos'),
-      height = photoDiv.height(),
-      rocketWidth = height * rocketRatio,
+      pageHeight = photoDiv.height(),
+      pageWidth = photoDiv.width(),
+      rocketWidth = pageHeight * rocketRatio,
 
       launches = [
         {
@@ -128,17 +169,62 @@ $(function(){
 
   for(i=0;i<len;i++){
     launch = launches[i];
-    item = $('<li>').html('<span>'+launch.name+'<br>'+launch.payload+'<br>'+launch.date+'</span>');
-    scale = height / launch.rocketHeight;
-    item.css({
-      backgroundImage: 'url('+launch.img+')',
-      backgroundPosition: '' + (launch.imgWidth - launch.offsetX) * scale + 'px ' +
-        (launch.imgHeight - launch.offsetY) * scale + 'px',
-      backgroundSize: '' + (launch.imgWidth * scale) + 'px ' +
-        (launch.imgHeight * scale) + 'px',
-      width: '' + rocketWidth + 'px'
-    });
+    item = $('<li>').html(
+      '<p>'+launch.name+'<br>'+
+      '<span class="payload">'+launch.payload+'</span><br>'+
+      launch.date+'</p>');
+    item.css(getStyle(launch));
+    item.data('launch', launch);
     photoDiv.append(item);
+  }
+
+  photoDiv.on("click", "li", function(){
+    var $this = $(this),
+        expand = !$this.hasClass("expand"),
+        left = this.offsetLeft,
+        launch = $this.data('launch'),
+        timer,
+        totalTime = 0;
+    photoDiv.find(".expand")
+      .removeClass("expand")
+      .each(function(i,item){
+        var $i = $(item);
+        $i.css(getStyle($i.data('launch')));
+      });
+    if(expand){
+      $this.css(getStyle(launch, true));
+      $this.addClass("expand");
+      timer = setInterval(function(){
+        $(window).scrollLeft(left);
+        totalTime += 10;
+        if(totalTime >= 1000){ clearInterval(timer); }
+      }, 10);
+    }
+  });
+
+  function getStyle(launch, expand){
+    var ratio = launch.imgWidth / launch.imgHeight
+        scale;
+    if(expand){
+      scale = pageHeight / launch.imgHeight;
+      return {
+        backgroundImage: 'url('+launch.img+')',
+        backgroundPosition: '' + (pageWidth - (launch.imgWidth*scale))/2 + 'px 0',
+        backgroundSize: '' + ratio*pageHeight + 'px ' + pageHeight + 'px',
+        width: pageWidth
+      };
+    }
+    else {
+      scale = pageHeight / launch.rocketHeight;
+      return {
+        backgroundImage: 'url('+launch.img+')',
+        backgroundPosition: '-' + launch.offsetX * scale + 'px -' +
+          launch.offsetY * scale + 'px',
+        backgroundSize: '' + (launch.imgWidth * scale) + 'px ' +
+          (launch.imgHeight * scale) + 'px',
+        width: '' + rocketWidth + 'px'
+      };
+    }
   }
 });
 </script>
